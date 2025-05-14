@@ -73,10 +73,15 @@ app.get("/images", (req, res) => {
 // Serve static files (like CSS) from the current directory or a designated folder
 app.use(express.static(path.join(__dirname, "./"))); // Adjust the path if your CSS is in a subfolder
 
-// Watcher (optional logging)
-chokidar.watch(UPLOAD_DIR).on("add", (filepath) => {
-  console.log("New image added:", path.basename(filepath));
-});
+// Watcher (optional logging), ignore .DS_Store
+chokidar
+  .watch(UPLOAD_DIR, {
+    ignored: /(^|[\/\\])\.DS_Store$/i,
+  })
+  .on("add", (filepath) => {
+    if (path.basename(filepath).toLowerCase() === ".ds_store") return;
+    console.log("New image added:", path.basename(filepath));
+  });
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
