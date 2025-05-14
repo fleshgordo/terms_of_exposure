@@ -1,0 +1,30 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gallery {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin: 20px;
+  width: 70%;
+  height: 100%;
+  align-items: center;
+}
+.gallery img {
+  max-width: 100%;
+  box-shadow: 0 0 8px 8px white inset;
+}
+form {
+  margin-top: 20px;
+}

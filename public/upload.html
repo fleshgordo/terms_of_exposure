@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f4f4f4;
+      }
+
+      .drop-zone {
+        width: 400px;
+        height: 200px;
+        border: 3px dashed #999;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: white;
+        text-align: center;
+        color: #777;
+        cursor: pointer;
+      }
+
+      .drop-zone.dragover {
+        background-color: #e0f7fa;
+        border-color: #00796b;
+        color: #00796b;
+      }
+
+      .hidden-input {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="drop-zone" id="drop-zone">
+      Drag & drop an image here or click to upload
+      <input type="file" id="fileInput" class="hidden-input" accept="image/*" />
+    </div>
+
+    <script>
+      const dropZone = document.getElementById("drop-zone");
+      const fileInput = document.getElementById("fileInput");
+
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        if (e.dataTransfer.files.length) {
+          uploadFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length) {
+          uploadFile(fileInput.files[0]);
+        }
+      });
+
+      function uploadFile(file) {
+        const formData = new FormData();
+        formData.append("image", file);
+        console.log("Uploading:", file);
+        console.log("FormData:", formData);
+        fetch("/post", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            showStatus("Upload successful!", "success");
+            console.log(data);
+          })
+          .catch((err) => {
+            console.error(err);
+            showStatus("Upload failed.", "error");
+          });
+      }
+
+      function showStatus(message, type) {
+        // Create status element if it doesn't exist
+        let statusEl = document.getElementById("status-message");
+        if (!statusEl) {
+          statusEl = document.createElement("div");
+          statusEl.id = "status-message";
+          statusEl.style.marginTop = "20px";
+          statusEl.style.padding = "10px";
+          statusEl.style.borderRadius = "5px";
+          statusEl.style.textAlign = "center";
+          document.body.appendChild(statusEl);
+        }
+
+        // Set message and style based on type
+        statusEl.textContent = message;
+        statusEl.style.backgroundColor =
+          type === "success" ? "#e8f5e9" : "#ffebee";
+        statusEl.style.color = type === "success" ? "#2e7d32" : "#c62828";
+        statusEl.style.border = `1px solid ${
+          type === "success" ? "#a5d6a7" : "#ef9a9a"
+        }`;
+      }
+    </script>
+  </body>
+</html>
